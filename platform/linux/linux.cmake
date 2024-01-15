@@ -15,6 +15,11 @@ find_package(Threads REQUIRED)
 pkg_search_module(WEBP libwebp REQUIRED)
 pkg_search_module(LIBUV libuv REQUIRED)
 
+if(MLN_WITH_WAYLAND)
+    set(MLN_WITH_EGL TRUE)
+    set(OPENGL_USE_GLES3 TRUE)
+endif()
+
 target_sources(
     mbgl-core
     PRIVATE
