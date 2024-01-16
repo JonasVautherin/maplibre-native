@@ -243,7 +243,9 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET="${DEPLOYMENT_TARGET}" \
             -DCMAKE_OSX_ARCHITECTURES="${DEPLOYMENT_ARCH}" \
-            -DMLN_WITH_QT=ON
+            -DMLN_WITH_QT=ON \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_BENCHMARK=OFF
           ninja
 
       - name: Build maplibre-native (Linux, Qt5)
@@ -263,7 +265,9 @@ jobs:
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DCMAKE_C_COMPILER_LAUNCHER="ccache" \
             -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
-            -DMLN_WITH_QT=ON
+            -DMLN_WITH_QT=ON \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_BENCHMARK=OFF
           ninja
 
       - name: Build maplibre-native (Linux, Qt6, custom compiler, internal libraries)
@@ -277,7 +281,9 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER="ccache" \
             -DMLN_WITH_QT=ON \
             -DMLN_QT_WITH_INTERNAL_ICU=ON \
-            -DMLN_QT_WITH_INTERNAL_SQLITE=ON
+            -DMLN_QT_WITH_INTERNAL_SQLITE=ON \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_BENCHMARK=OFF
           ninja
 
       - name: Run tests (Linux)
@@ -299,5 +305,7 @@ jobs:
             -DCMAKE_CONFIGURATION_TYPES="${BUILD_TYPE}" \
             -DCMAKE_C_COMPILER_LAUNCHER="ccache.exe" \
             -DCMAKE_CXX_COMPILER_LAUNCHER="ccache.exe" \
-            -DMLN_WITH_QT=ON
+            -DMLN_WITH_QT=ON \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_BENCHMARK=OFF
           ninja.exe
