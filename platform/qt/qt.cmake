@@ -165,7 +165,7 @@ if(MLN_QT_HAS_PARENT)
     )
 endif()
 
-if(NOT MLN_QT_LIBRARY_ONLY)
+if(BUILD_TESTING AND NOT MLN_QT_LIBRARY_ONLY)
     # test runner
     add_executable(
         mbgl-test-runner
