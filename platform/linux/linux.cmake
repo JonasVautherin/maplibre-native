@@ -160,63 +160,69 @@ if(MLN_WITH_NODE)
     add_subdirectory(${PROJECT_SOURCE_DIR}/platform/node)
 endif()
 
-add_executable(
-    mbgl-test-runner
-    ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/test/main.cpp
-)
+if(BUILD_TESTING)
+    add_executable(
+        mbgl-test-runner
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/test/main.cpp
+    )
 
-target_compile_definitions(
-    mbgl-test-runner
-    PRIVATE
-        WORK_DIRECTORY=${PROJECT_SOURCE_DIR}
-)
-
-if (DEFINED ENV{CI})
-    message("Building for CI")
     target_compile_definitions(
         mbgl-test-runner
         PRIVATE
-            CI_BUILD=1
+            WORK_DIRECTORY=${PROJECT_SOURCE_DIR}
+    )
+
+    if (DEFINED ENV{CI})
+        message("Building for CI")
+        target_compile_definitions(
+            mbgl-test-runner
+            PRIVATE
+                CI_BUILD=1
+        )
+    endif()
+
+    target_link_libraries(
+        mbgl-test-runner
+        PRIVATE
+            mbgl-compiler-options
+            -Wl,--whole-archive
+            mbgl-test
+            -Wl,--no-whole-archive
     )
 endif()
 
-target_link_libraries(
-    mbgl-test-runner
-    PRIVATE
-        mbgl-compiler-options
-        -Wl,--whole-archive
-        mbgl-test
-        -Wl,--no-whole-archive
-)
+if(BUILD_BENCHMARK)
+    add_executable(
+        mbgl-benchmark-runner
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/benchmark/main.cpp
+    )
 
-add_executable(
-    mbgl-benchmark-runner
-    ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/benchmark/main.cpp
-)
-
-target_link_libraries(
-    mbgl-benchmark-runner
-    PRIVATE
-        mbgl-compiler-options
-        -Wl,--whole-archive
-        mbgl-benchmark
-        -Wl,--no-whole-archive
-)
-
-add_executable(
-    mbgl-render-test-runner
-    ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/render-test/main.cpp
-)
-
-target_link_libraries(
-    mbgl-render-test-runner
-    PRIVATE mbgl-compiler-options mbgl-render-test
-)
-
-# Disable benchmarks in CI as they run in VM environment
-if(NOT DEFINED ENV{CI})
-    add_test(NAME mbgl-benchmark-runner COMMAND mbgl-benchmark-runner WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+    target_link_libraries(
+        mbgl-benchmark-runner
+        PRIVATE
+            mbgl-compiler-options
+            -Wl,--whole-archive
+            mbgl-benchmark
+            -Wl,--no-whole-archive
+    )
 endif()
-add_test(NAME mbgl-test-runner COMMAND mbgl-test-runner WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-install(TARGETS mbgl-render-test-runner RUNTIME DESTINATION bin)
+if(BUILD_TESTING)
+    add_executable(
+        mbgl-render-test-runner
+        ${PROJECT_SOURCE_DIR}/platform/default/src/mbgl/render-test/main.cpp
+    )
+
+    target_link_libraries(
+        mbgl-render-test-runner
+        PRIVATE mbgl-compiler-options mbgl-render-test
+    )
+
+    # Disable benchmarks in CI as they run in VM environment
+    if(NOT DEFINED ENV{CI})
+        add_test(NAME mbgl-benchmark-runner COMMAND mbgl-benchmark-runner WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+    endif()
+    add_test(NAME mbgl-test-runner COMMAND mbgl-test-runner WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+    install(TARGETS mbgl-render-test-runner RUNTIME DESTINATION bin)
+endif()
